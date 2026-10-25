@@ -41,29 +41,56 @@ API base URL: `http://127.0.0.1:8000/api`
 
 ## Endpoints
 
-| Method | URI                  | Action            |
-| ------ | -------------------- | ----------------- |
-| GET    | `/api/students`      | List all students |
-| GET    | `/api/students/{id}` | Get one student   |
-| POST   | `/api/students`      | Create student    |
-| PUT    | `/api/students/{id}` | Update student    |
-| DELETE | `/api/students/{id}` | Delete student    |
+### Public
+
+| Method | URI             | Action   |
+| ------ | --------------- | -------- |
+| POST   | `/api/register` | Register |
+| POST   | `/api/login`    | Login    |
+
+### Authenticated (any role)
+
+| Method | URI                  | Action          |
+| ------ | -------------------- | --------------- |
+| POST   | `/api/logout`        | Revoke token    |
+| GET    | `/api/students`      | List students   |
+| GET    | `/api/students/{id}` | Get one student |
+
+### Admin only
+
+| Method    | URI                  | Action         |
+| --------- | -------------------- | -------------- |
+| POST      | `/api/students`      | Create student |
+| PUT/PATCH | `/api/students/{id}` | Update student |
+| DELETE    | `/api/students/{id}` | Delete student |
+| PUT       | `/api/users/{id}`    | Update user    |
+| DELETE    | `/api/users/{id}`    | Delete user    |
 
 ## Project Structure (Relevant Files)
 
 ```
 app/
 ├── Http/
-│   ├── Controllers/
-│   │   └── StudentController.php
-│   └── Requests/
-│       └── StudentRequest.php
+│ ├── Controllers/
+│ │ ├── AuthController.php
+│ │ ├── AdminController.php
+│ │ └── StudentController.php
+│ ├── Middleware/
+│ │ └── EnsureUserIsAdmin.php
+│ └── Requests/
+│ └── StudentRequest.php
 └── Models/
-    └── Student.php
+  ├── Student.php
+  └── User.php
+
+bootstrap/
+└── app.php
 
 database/
 └── migrations/
-    └── xxxx_xx_xx_create_students_table.php
+├── xxxx_xx_xx_create_students_table.php
+├── xxxx_xx_xx_create_users_table.php
+└── xxxx_xx_xx_create_personal_access_tokens_table.php
 
 routes/
 └── api.php
