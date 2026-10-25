@@ -63,8 +63,6 @@ API base URL: `http://127.0.0.1:8000/api`
 | POST      | `/api/students`      | Create student |
 | PUT/PATCH | `/api/students/{id}` | Update student |
 | DELETE    | `/api/students/{id}` | Delete student |
-| PUT       | `/api/users/{id}`    | Update user    |
-| DELETE    | `/api/users/{id}`    | Delete user    |
 
 ## Project Structure (Relevant Files)
 
@@ -73,7 +71,6 @@ app/
 ├── Http/
 │ ├── Controllers/
 │ │ ├── AuthController.php
-│ │ ├── AdminController.php
 │ │ └── StudentController.php
 │ ├── Middleware/
 │ │ └── EnsureUserIsAdmin.php
