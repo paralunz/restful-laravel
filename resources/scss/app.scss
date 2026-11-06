@@ -32,3 +32,21 @@ body {
 .form-control {
     border-radius: 6px;
 }
+
+.auth-layout {
+    background-color: #f5f6fa;
+}
+
+.auth-layout .card {
+    border: none;
+    border-radius: 12px;
+}
+
+.auth-layout .form-control {
+    padding: 0.7rem 0.85rem;
+}
+
+.auth-layout .btn {
+    padding: 0.7rem;
+    font-weight: 500;
+}
