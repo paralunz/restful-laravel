@@ -8,7 +8,7 @@ import Button from '../components/Button.vue';
 import Alert from '../components/Alert.vue';
 import Dropdown from '../components/Dropdown.vue';
 
-import { register } from '../services/authService';
+import { register, login } from '../services/authService';
 
 const router = useRouter();
 
@@ -38,7 +38,12 @@ const handleRegister = async () => {
             role: role.value,
         });
 
-        router.push('/login');
+        await login({
+            email: email.value,
+            password: password.value,
+        });
+
+        router.push('/students');
     } catch (err) {
         if (err.response?.status === 422) {
             errors.value = err.response.data.errors || {};

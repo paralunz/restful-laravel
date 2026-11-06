@@ -6,7 +6,6 @@ import AuthLayout from '../layouts/AuthLayout.vue';
 import Input from '../components/Input.vue';
 import Button from '../components/Button.vue';
 import Alert from '../components/Alert.vue';
-
 import { login } from '../services/authService';
 
 const router = useRouter();
@@ -24,13 +23,10 @@ const handleLogin = async () => {
     errors.value = {};
 
     try {
-        const response = await login({
+        await login({
             email: email.value,
             password: password.value,
         });
-
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
 
         router.push('/students');
     } catch (err) {
