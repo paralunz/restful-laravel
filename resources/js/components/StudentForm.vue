@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     student: {
@@ -10,7 +10,7 @@ const props = defineProps({
 
 const emit = defineEmits(['save', 'cancel']);
 
-const form = reactive({
+const form = ref({
     student_number: '',
     name: '',
     course: '',
@@ -21,21 +21,21 @@ const form = reactive({
 watch(
     () => props.student,
     (student) => {
-        Object.assign(form, {
+        form.value = {
             student_number: student?.student_number ?? '',
             name: student?.name ?? '',
             course: student?.course ?? '',
             section: student?.section ?? '',
             year_level: student?.year_level ?? '',
-        });
+        };
     },
     { immediate: true },
 );
 
 const submitForm = () => {
     emit('save', {
-        ...form,
-        year_level: Number(form.year_level),
+        ...form.value,
+        year_level: Number(form.value.year_level),
     });
 };
 </script>
