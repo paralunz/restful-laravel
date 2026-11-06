@@ -11,14 +11,38 @@ const selectedStudent = ref(null);
 const showForm = ref(false);
 const loading = ref(false);
 
-const message = ref('');
-const messageType = ref('success');
+const alert = ref({
+    message: '',
+    type: 'success',
+    errors: [],
+});
 
-const showMessage = (text, type = 'success') => {
-    message.value = text;
-    messageType.value = type;
+const showMessage = (message, type = 'success') => {
+    alert.value = {
+        message,
+        type,
+        errors: [],
+    };
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+const showValidationErrors = (errors) => {
+    alert.value = {
+        message: '',
+        type: 'danger',
+        errors: Object.values(errors).flat(),
+    };
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+const clearAlert = () => {
+    alert.value = {
+        message: '',
+        type: 'success',
+        errors: [],
+    };
 };
 
 const fetchStudents = async () => {
@@ -26,7 +50,6 @@ const fetchStudents = async () => {
 
     try {
         const response = await api.get('/students');
-
         students.value = response.data.data ?? response.data;
     } catch (error) {
         showMessage(error.response?.data?.message || 'Failed to load students.', 'danger');
@@ -36,17 +59,21 @@ const fetchStudents = async () => {
 };
 
 const openAddForm = () => {
+    clearAlert();
     selectedStudent.value = null;
     showForm.value = true;
 };
 
 const openEditForm = (student) => {
+    clearAlert();
     selectedStudent.value = { ...student };
     showForm.value = true;
 };
 
 const saveStudent = async (studentData) => {
     try {
+        clearAlert();
+
         if (selectedStudent.value) {
             await api.put(`/students/${selectedStudent.value.id}`, studentData);
 
@@ -62,12 +89,10 @@ const saveStudent = async (studentData) => {
 
         await fetchStudents();
     } catch (error) {
-        const errors = error.response?.data?.errors;
-
-        if (errors) {
-            showMessage(Object.values(errors).flat().join(' '), 'danger');
+        if (error.response?.status === 422) {
+            showValidationErrors(error.response.data.errors);
         } else {
-            showMessage(error.response?.data?.message || 'Something went wrong.', 'danger');
+            showMessage(error.response?.data?.message || 'Failed to save student.', 'danger');
         }
     }
 };
@@ -78,13 +103,19 @@ const deleteStudent = async (id) => {
     }
 
     try {
+        clearAlert();
+
         await api.delete(`/students/${id}`);
 
         showMessage('Student deleted successfully!');
 
         await fetchStudents();
     } catch (error) {
-        showMessage(error.response?.data?.message || 'Failed to delete student.', 'danger');
+        if (error.response?.status === 422) {
+            showValidationErrors(error.response.data.errors);
+        } else {
+            showMessage(error.response?.data?.message || 'Failed to delete student.', 'danger');
+        }
     }
 };
 
@@ -102,22 +133,29 @@ onMounted(fetchStudents);
             <button v-if="!showForm" class="btn btn-primary" @click="openAddForm">+ Add Student</button>
         </div>
 
-        <div v-if="message" class="alert" :class="`alert-${messageType}`" role="alert">
-            {{ message }}
+        <!-- General success/error message -->
+        <div v-if="alert.message" class="alert" :class="`alert-${alert.type}`" role="alert">
+            {{ alert.message }}
 
-            <button type="button" class="btn-close float-end" @click="message = ''"></button>
+            <button type="button" class="btn-close float-end" @click="clearAlert"></button>
+        </div>
+
+        <!-- Validation errors -->
+        <div v-if="alert.errors.length" class="alert alert-danger" role="alert">
+            <h6 class="alert-heading fw-bold">Please check the following errors:</h6>
+
+            <ul class="mb-0">
+                <li v-for="(error, index) in alert.errors" :key="index">
+                    {{ error }}
+                </li>
+            </ul>
         </div>
 
         <StudentForm v-if="showForm" :student="selectedStudent" @save="saveStudent" @cancel="showForm = false" />
 
         <div v-else class="card shadow-sm">
             <div class="card-body">
-                <div v-if="loading" class="text-center py-5">
-                    <div class="spinner-border text-primary"></div>
-                    <p class="mt-2 text-muted">Loading students...</p>
-                </div>
-
-                <StudentList v-else :students="students" @edit="openEditForm" @delete="deleteStudent" />
+                <StudentList :students="students" @edit="openEditForm" @delete="deleteStudent" />
             </div>
         </div>
     </div>
