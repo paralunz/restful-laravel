@@ -1,9 +1,5 @@
 @import "bootstrap/scss/bootstrap";
 
-// --------------------------------------
-// Global
-// --------------------------------------
-
 body {
     background-color: #f5f6fa;
     color: #1e293b;
@@ -13,58 +9,6 @@ body {
 .container {
     max-width: 1200px;
 }
-
-// --------------------------------------
-// Cards
-// --------------------------------------
-
-
-.card {
-    background-color: #ffffff;
-    border: 1px solid #dce3ed;
-    border-radius: 12px;
-}
-
-// --------------------------------------
-// Tables
-// --------------------------------------
-
-.table {
-    th {
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    td {
-        white-space: nowrap;
-    }
-}
-
-// --------------------------------------
-// Buttons
-// --------------------------------------
-
-.btn {
-    border-radius: 6px;
-}
-
-// --------------------------------------
-// Forms
-// --------------------------------------
-
-.form-control,
-.form-select {
-    border-radius: 6px;
-}
-
-.form-control:focus,
-.form-select:focus {
-    box-shadow: none;
-}
-
-// --------------------------------------
-// Authentication Layout
-// --------------------------------------
 
 .auth-layout {
     .card {
