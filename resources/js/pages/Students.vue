@@ -2,13 +2,14 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
-import api from '../api';
-import { logout, user, isAdmin } from '../services/authService';
+import { logout, isAdmin } from '../services/authService';
+import { getStudents, createStudent, updateStudent, deleteStudent } from '../services/studentService';
 
 import Alert from '../components/Alert.vue';
 import StudentTable from '../components/students/StudentTable.vue';
 import StudentModal from '../components/students/StudentModal.vue';
 
+//
 // Router and authentication
 const router = useRouter();
 const admin = computed(() => isAdmin());
@@ -28,7 +29,7 @@ const loadStudents = async () => {
     error.value = '';
 
     try {
-        const { data } = await api.get('/students');
+        const { data } = await getStudents();
         students.value = data.data ?? data;
     } catch (err) {
         error.value = err.response?.data?.message || 'Failed to load students.';
@@ -106,9 +107,9 @@ const save = async () => {
 
     try {
         if (editingId.value) {
-            await api.put(`/students/${editingId.value}`, payload);
+            await updateStudent(editingId.value, payload);
         } else {
-            await api.post('/students', payload);
+            await createStudent(payload);
         }
 
         showModal.value = false;
@@ -131,14 +132,13 @@ const remove = async (student) => {
     error.value = '';
 
     try {
-        await api.delete(`/students/${student.id}`);
+        await deleteStudent(student.id);
         await loadStudents();
     } catch (err) {
         error.value = err.response?.data?.message || 'Failed to delete student.';
     }
 };
 
-// Initial load
 onMounted(loadStudents);
 </script>
 
